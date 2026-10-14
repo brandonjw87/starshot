@@ -48,6 +48,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -183,7 +184,8 @@ fun StarShotApp(act: MainActivity) {
             else -> -1f
         })
     }
-    Box(Modifier.fillMaxSize().background(Color.Black).systemBarsPadding()) {
+    Surface(Modifier.fillMaxSize(), color = Color.Black, contentColor = TextRed) {
+    Box(Modifier.fillMaxSize().systemBarsPadding()) {
         when {
             phase !is Phase.Idle -> SessionOverlay(phase)
             !hasCam -> Column(Modifier.padding(24.dp)) {
@@ -194,6 +196,7 @@ fun StarShotApp(act: MainActivity) {
             screen == "gallery" -> GalleryScreen { screen = "camera" }
             else -> CameraScreen(act, onGallery = { screen = "gallery" })
         }
+    }
     }
 }
 

@@ -150,6 +150,7 @@ object SessionRunner {
 
     private suspend fun run(ctx: Context, cam: StarCamera, cfg: SessionConfig) {
         val opt = cfg.option
+        setPhase(Phase.Countdown(cfg.countdownSec, "Preparing camera…"))
         val ann = Announcer(ctx, cfg.voice, cfg.vibrate, cfg.maxVolume)
         CaptureService.start(ctx)
         val scratch = File(ctx.cacheDir, "stack").apply { mkdirs(); listFiles()?.forEach { it.delete() } }
