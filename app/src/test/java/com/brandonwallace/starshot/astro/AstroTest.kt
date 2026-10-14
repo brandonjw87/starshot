@@ -52,6 +52,7 @@ class AutoModeTest {
         val p = AutoMode.plan(shortCaps, PIXEL_MAIN, Presets.MILKY_WAY, null)
         assertEquals(1.0, p.exposureSec, 1e-6)
         assertEquals(180, p.frames)
+        assertEquals(Blend.MEAN, p.blend) // too many frames to spool for sigma clipping
         assertTrue(p.iso <= AutoMode.isoCeiling(shortCaps))
     }
     @Test fun brightSceneDropsIsoThenExposure() {

@@ -142,7 +142,7 @@ object SessionRunner {
         val exp = cfg.manualExposureNs.coerceIn(cfg.option.caps.minExposureNs, cfg.option.caps.maxExposureNs)
         val frames = if (mode == ShootMode.SINGLE) 1 else cfg.manualFrames.coerceAtLeast(1)
         val interval = if (mode == ShootMode.TIMELAPSE) max((cfg.intervalSec * 1000).toLong(), exp / 1_000_000 + 1500) else 0L
-        val blend = when (mode) { ShootMode.STACK -> if (frames >= 5) Blend.SIGMA_CLIP else Blend.MEAN; ShootMode.SINGLE -> Blend.MEAN; else -> Blend.LIGHTEN }
+        val blend = when (mode) { ShootMode.STACK -> AutoMode.stackBlend(frames); ShootMode.SINGLE -> Blend.MEAN; else -> Blend.LIGHTEN }
         return ShotPlan(exp, cfg.manualIso, frames, interval, mode == ShootMode.STACK, blend, if (mode == ShootMode.SINGLE) 1 else 4)
     }
 
@@ -327,7 +327,7 @@ object SessionRunner {
         val img = if (desc == null && isRaw) rgb.copyOf().also { c -> FrameDecode.cameraToSrgb(opt)?.let { RawDevelop.applyMatrix(c, w * h, it) } } else rgb
         val argb = Stretch.toArgb(img, w, h, cfg.preset.stretch)
         val bmp = Bitmap.createBitmap(argb, w, h, Bitmap.Config.ARGB_8888)
-        val tmp = File.createTempFile("ss", ".jpg")
+        val tmp = File.createTempFile("starshot", ".jpg")
         tmp.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 97, it) }
         bmp.recycle()
         runCatching {

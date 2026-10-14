@@ -110,6 +110,11 @@ object AutoMode {
         }
     }
 
+    /** Sigma clipping spools every frame (~19 MB each at Pixel half-res) to disk; above this, use a plain mean. */
+    const val MAX_SIGMA_FRAMES = 60
+
+    fun stackBlend(frames: Int): Blend = if (frames in 5..MAX_SIGMA_FRAMES) Blend.SIGMA_CLIP else Blend.MEAN
+
     fun brightness(m: Metering?): Double =
         if (m == null) DARK_SKY_BRIGHTNESS else max(m.medianLinear, 1e-6) / (m.exposureNs / 1e9 * m.iso)
 
@@ -130,7 +135,7 @@ object AutoMode {
         return when (preset.mode) {
             ShootMode.STACK -> {
                 val n = ceil(preset.targetTotalSec / tS).toInt().coerceIn(3, 400)
-                ShotPlan(tNs, isoI, n, 0, true, if (n >= 5) Blend.SIGMA_CLIP else Blend.MEAN, 0)
+                ShotPlan(tNs, isoI, n, 0, true, stackBlend(n), 0)
             }
             ShootMode.STAR_TRAILS -> {
                 val n = ceil(preset.targetTotalSec / tS).toInt().coerceIn(2, 3000)
